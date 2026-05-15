@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Koipy 控制面板</title>
+  <link rel="icon" href="./koipy.ico" type="image/x-icon">
+  <link rel="stylesheet" href="./static/shadcn-base.css">
+  <script type="module" src="./static/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳转到配置工作区</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="配置分类导航">
+      <section class="brand-panel" aria-labelledby="app-title">
+        <div class="brand-mark" aria-hidden="true">
+          <img src="./koipy.ico" alt="" width="32" height="32">
+        </div>
+        <div>
+          <p class="eyebrow">Koi Control Console</p>
+          <h1 id="app-title">Koipy 配置管理</h1>
+        </div>
+      </section>
+
+      <div class="search-control">
+        <label for="global-search">全局搜索</label>
+        <div class="input-with-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.2-4.2M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z"></path></svg>
+          <input id="global-search" type="search" placeholder="搜索路径、字段名、中文说明" autocomplete="off">
+        </div>
+        <section class="result-panel search-results-panel is-hidden" id="search-results" aria-label="搜索结果"></section>
+      </div>
+
+      <nav class="section-nav" id="section-nav" aria-label="配置大类"></nav>
+
+      <section class="sidebar-card connection-card">
+        <div class="connection-card-head">
+          <p class="eyebrow">Connection Monitor</p>
+          <div class="mini-status">
+            <span class="status-dot" id="nav-health-dot"></span>
+            <strong id="nav-health-text">待连接</strong>
+          </div>
+        </div>
+        <div class="connection-card-grid">
+          <article class="connection-stat">
+            <span>最后同步</span>
+            <strong id="nav-sync-time">尚未同步</strong>
+          </article>
+          <article class="connection-stat">
+            <span>连接延迟</span>
+            <strong id="nav-health-latency">-- ms</strong>
+          </article>
+        </div>
+        <button class="button secondary full" type="button" id="reload-config">重新拉取配置</button>
+      </section>
+    </aside>
+
+    <main id="main" class="main" tabindex="-1">
+      <header class="topbar">
+        <div class="topbar-title">
+          <p class="eyebrow">Network Lab / Telegram Bot Ops</p>
+          <h2 id="view-title">总览 Dashboard</h2>
+          <p id="view-subtitle">读取运行态配置后，在本地草稿中完成编辑、校验和应用。</p>
+        </div>
+
+        <section class="connection-bar" id="connection-bar" aria-label="连接与认证">
+          <div class="connection-head">
+            <div>
+              <p class="eyebrow">Connection Setup</p>
+              <h3>连接与认证</h3>
+            </div>
+            <p class="connection-state">连接状态：<strong id="health-text">连接中</strong></p>
+          </div>
+          <div class="connection-grid">
+            <div class="connection-field api-field">
+              <label for="api-base">API 地址</label>
+              <input id="api-base" type="text" inputmode="url" placeholder="留空使用同源 API，例如 http://127.0.0.1:8899">
+              <small id="api-base-hint">留空表示使用当前站点同源 API。</small>
+            </div>
+            <div class="connection-field access-field">
+              <label for="access-password">访问密码</label>
+              <span class="secret-input">
+                <input id="access-password" type="password" autocomplete="current-password" placeholder="webapp.password">
+                <button class="icon-button" type="button" id="toggle-access-password" aria-label="显示或隐藏访问密码">
+                  <svg viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+              </span>
+              <label class="remember-access" for="remember-access-password">
+                <input id="remember-access-password" type="checkbox">
+                <span>记住密码（仅当前浏览器）</span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <div class="topbar-controls">
+          <div class="action-row action-row-main">
+            <button class="button secondary" type="button" id="validate-draft">校验草稿</button>
+            <button class="button primary" type="button" id="write-memory">写入内存</button>
+            <button class="button secondary" type="button" id="save-file">保存</button>
+          </div>
+          <div class="action-row action-row-danger" aria-label="危险操作">
+            <button class="button accent" type="button" id="save-reload">保存并重载</button>
+          </div>
+        </div>
+      </header>
+
+      <section class="status-strip" aria-label="配置状态">
+        <article><span>草稿</span><strong id="draft-text">未加载</strong></article>
+        <article><span>字段数量</span><strong id="field-count">0</strong></article>
+        <article><span>校验结果</span><strong id="validation-text">未校验</strong></article>
+        <article><span>最后同步</span><strong id="sync-time">--</strong></article>
+      </section>
+
+      <div class="workspace">
+        <section class="content-column">
+          <section class="view-stack" id="view-stack" aria-live="polite"></section>
+
+          <section class="advanced-panel" aria-labelledby="advanced-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Advanced Editor</p>
+                <h3 id="advanced-title">完整 JSON / YAML</h3>
+              </div>
+              <div class="segmented" role="tablist" aria-label="高级编辑器切换">
+                <button type="button" class="is-active" data-editor-tab="json">JSON 草稿</button>
+                <button type="button" data-editor-tab="yaml">YAML 导出</button>
+              </div>
+            </div>
+            <div class="editor-toolbar">
+              <button class="button secondary" type="button" id="sync-json">同步 JSON</button>
+              <button class="button secondary" type="button" id="apply-json">用 JSON 替换草稿</button>
+              <button class="button secondary" type="button" id="refresh-yaml">刷新 YAML</button>
+              <button class="button secondary" type="button" id="export-yaml">导出 YAML</button>
+              <button class="button danger" type="button" id="discard-reload">放弃并从文件重载</button>
+            </div>
+            <textarea id="json-editor" class="code-editor" spellcheck="false" aria-label="完整 JSON 草稿"></textarea>
+            <textarea id="yaml-editor" class="code-editor is-hidden" spellcheck="false" readonly aria-label="YAML 导出预览"></textarea>
+          </section>
+        </section>
+
+        <aside class="inspector" aria-labelledby="inspector-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Inspector</p>
+              <h3 id="inspector-title">字段审查</h3>
+            </div>
+            <span class="type-badge" id="inspector-type">unknown</span>
+          </div>
+          <div class="path-card">
+            <span>YAMLPath</span>
+            <code id="inspector-path">$</code>
+            <button class="button secondary full" type="button" id="copy-path">复制 YAMLPath</button>
+          </div>
+          <dl class="inspect-list">
+            <div><dt>当前值摘要</dt><dd id="inspector-summary">尚未选择字段</dd></div>
+            <div><dt>风险提示</dt><dd id="inspector-risk">无</dd></div>
+          </dl>
+          <label class="field-label" for="inspector-json">JSON 预览</label>
+          <textarea id="inspector-json" class="code-editor small" readonly></textarea>
+          <div class="inspector-actions">
+            <button class="button secondary" type="button" id="restore-field">恢复单个字段</button>
+            <button class="button danger" type="button" id="delete-field">删除字段</button>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <div class="scroll-tools is-hidden" id="scroll-tools" aria-label="页面滚动工具">
+    <button class="scroll-tool" type="button" id="scroll-to-top" aria-label="回到顶部" title="回到顶部">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m18 15-6-6-6 6"></path></svg>
+    </button>
+    <button class="scroll-tool" type="button" id="scroll-to-bottom" aria-label="滚动到底部" title="滚动到底部">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+    </button>
+  </div>
+  <div class="modal-host" id="modal-host"></div>
+</body>
+</html>
