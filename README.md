@@ -1,4 +1,4 @@
-【github ci移植】
+【github ci移植 总览 Dashboard】
 
 # Koiboard 独立运行说明
 
@@ -7,6 +7,8 @@
 ## 1. 启动 Koipy API
 
 确保 Koipy 后端已启用 `webapp.enable=true`，并设置了 `webapp.password`。
+
+把 https://nodeparties.github.io/ 加入 allowOrigin 内才可正常工作
 
 ## 2. 启动静态文件服务
 
