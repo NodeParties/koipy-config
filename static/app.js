@@ -859,6 +859,14 @@ function toast(title, message = "", tone = "success") {
   }, 4200);
 }
 
+function readableConnectionError(error) {
+  const message = String(error?.message || error || "未知错误");
+  if (/failed to fetch|load failed|networkerror/i.test(message)) {
+    return "浏览器无法访问真实 API。请检查 CORS 是否允许当前 GitHub Pages 域名、API 是否为 HTTPS，以及 API 地址是否只填写到域名。";
+  }
+  return message;
+}
+
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
 }
@@ -1715,7 +1723,7 @@ async function loadConfig(options = {}) {
     state.selectedPath = "$";
     render();
     const detail = cause
-      ? `真实 API 暂不可用，已载入浏览器本地配置：${cause.message}`
+      ? `真实 API 暂不可用，已载入浏览器本地配置：${readableConnectionError(cause)}`
       : "已载入浏览器本地配置。";
     toast("已进入本地模式", detail, cause ? "warning" : "success");
   };
