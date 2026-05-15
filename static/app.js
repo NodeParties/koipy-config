@@ -2093,10 +2093,16 @@ function bindEvents() {
     syncApiBaseStorage();
     if (el.apiBaseHint) el.apiBaseHint.textContent = `API 地址无效：${error.message}`;
   }
-  el.apiBase?.addEventListener("change", () => {
+  el.apiBase?.addEventListener("change", async () => {
     try {
-      applyApiBase(el.apiBase.value, { silent: true });
-      toast("API 地址已更新", state.apiBase || "已切换为同源 API。");
+      const nextApiBase = el.apiBase.value;
+      if (state.config && state.dirtyPaths.size && !await confirmDanger("切换 API 地址", "切换后会重新拉取配置，未保存草稿会丢失。")) {
+        el.apiBase.value = state.apiBase;
+        return;
+      }
+      applyApiBase(nextApiBase, { silent: true });
+      toast("API 地址已更新", state.backendMode === "local" ? "已切换为浏览器本地模式。" : (state.apiBase || "已切换为同源 API。"));
+      await loadConfig();
     } catch (error) {
       toast("API 地址无效", error.message, "warning");
       el.apiBase.value = state.apiBase;

@@ -1,3 +1,5 @@
+【github ci移植】
+
 # Koiboard 独立运行说明
 
 `web/koiboard` 现在可以作为独立前端部署，Koipy 仅提供 API。
