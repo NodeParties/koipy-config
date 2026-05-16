@@ -1,4 +1,5 @@
 【github ci移植 总览 Dashboard】
+测试链接 https://nodeparties.github.io/koipy-config/
 
 # Koiboard 独立运行说明
 
