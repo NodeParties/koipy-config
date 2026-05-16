@@ -1,4 +1,4 @@
-name: Deploy GitHub Pages
+name: Deploy
 
 on:
   push:
@@ -36,6 +36,7 @@ jobs:
           cp koipy.ico _site/
           cp favicon.ico _site/
           cp static/app.js _site/static/
+          cp static/default-config.json _site/static/
           cp static/shadcn-base.css _site/static/
           touch _site/.nojekyll
 

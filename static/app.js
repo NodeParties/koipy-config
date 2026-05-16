@@ -2,6 +2,8 @@ const storageKey = "koipy.configAdmin.accessPassword";
 const rememberPasswordKey = "koipy.configAdmin.rememberAccessPassword";
 const apiBaseKey = "koipy.configAdmin.apiBase";
 const localConfigKey = "koipy.configAdmin.localConfig";
+const localConfigTemplateKey = "koipy.configAdmin.localConfigTemplate";
+const localConfigTemplateVersion = "config-example-v1";
 const sensitivePattern = /(password|token|api-hash|license|secret|key)$/i;
 const urlPattern = /^(https?:\/\/|socks5:\/\/|ws:\/\/|wss:\/\/|udp:\/\/).+/i;
 const hexPattern = /^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
@@ -352,6 +354,8 @@ const DEFAULT_CONFIG = {
   },
 };
 
+let defaultConfigTemplate = DEFAULT_CONFIG;
+
 const el = {
   nav: document.querySelector("#section-nav"),
   viewTitle: document.querySelector("#view-title"),
@@ -588,6 +592,10 @@ function wantsLocalBackend() {
   return params.get("mode") === "local" || params.get("apiBase") === "local";
 }
 
+function shouldUseGeneratorMode() {
+  return wantsLocalBackend() || (!state.apiBase && window.location.hostname.endsWith("github.io"));
+}
+
 function mergeDefaults(value, defaults) {
   if (Array.isArray(defaults)) return Array.isArray(value) ? value : clone(defaults);
   if (!defaults || typeof defaults !== "object") return value === undefined ? defaults : value;
@@ -598,25 +606,40 @@ function mergeDefaults(value, defaults) {
   ]).concat(Object.entries(source).filter(([key]) => !(key in defaults))));
 }
 
+async function loadDefaultConfigTemplate() {
+  try {
+    const response = await fetch(new URL("./static/default-config.json", window.location.href), { cache: "no-cache" });
+    if (!response.ok) throw new Error(response.statusText);
+    const template = await response.json();
+    if (template && typeof template === "object" && !Array.isArray(template)) {
+      defaultConfigTemplate = mergeDefaults(template, DEFAULT_CONFIG);
+    }
+  } catch {
+    defaultConfigTemplate = DEFAULT_CONFIG;
+  }
+}
+
 function readLocalConfig() {
   try {
     const raw = window.localStorage.getItem(localConfigKey);
+    const templateVersion = window.localStorage.getItem(localConfigTemplateKey);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-        return mergeDefaults(parsed, DEFAULT_CONFIG);
+      if (templateVersion === localConfigTemplateVersion && parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        return mergeDefaults(parsed, defaultConfigTemplate);
       }
     }
   } catch {
     window.localStorage.removeItem(localConfigKey);
   }
-  const initial = clone(DEFAULT_CONFIG);
+  const initial = clone(defaultConfigTemplate);
   writeLocalConfig(initial);
   return initial;
 }
 
 function writeLocalConfig(config) {
   window.localStorage.setItem(localConfigKey, JSON.stringify(config));
+  window.localStorage.setItem(localConfigTemplateKey, localConfigTemplateVersion);
 }
 
 function validateLocalConfig(config) {
@@ -655,23 +678,23 @@ function localApi(path, options = {}) {
   const method = String(options.method || "GET").toUpperCase();
   const payload = options.body || {};
   if (path === "/api/health" && method === "GET") {
-    return { status: "ok", mode: "local" };
+    return { status: "ok", mode: "generator" };
   }
   if (path === "/api/config" && method === "GET") {
-    return { config: readLocalConfig(), mode: "local" };
+    return { config: readLocalConfig(), mode: "generator" };
   }
   if (path === "/api/config" && method === "PUT") {
-    const nextConfig = mergeDefaults(payload.config, DEFAULT_CONFIG);
+    const nextConfig = mergeDefaults(payload.config, defaultConfigTemplate);
     validateLocalConfig(nextConfig);
     writeLocalConfig(nextConfig);
-    return { config: nextConfig, mode: "local" };
+    return { config: nextConfig, mode: "generator" };
   }
   if (path === "/api/config/validate" && method === "POST") {
-    validateLocalConfig(mergeDefaults(payload.config, DEFAULT_CONFIG));
-    return { success: true, mode: "local" };
+    validateLocalConfig(mergeDefaults(payload.config, defaultConfigTemplate));
+    return { success: true, mode: "generator" };
   }
   if (path === "/api/config/apply" && method === "POST") {
-    return { success: true, mode: "local", applied: payload.mode || "save" };
+    return { success: true, mode: "generator", applied: payload.mode || "save" };
   }
   throw new Error(`本地模式不支持 ${method} ${path}`);
 }
@@ -1037,7 +1060,7 @@ function renderChrome() {
       el.navHealthLatency.textContent = "测试中";
       el.navHealthLatency.dataset.tone = "pending";
     } else if (state.health === "local") {
-      el.navHealthLatency.textContent = "浏览器";
+      el.navHealthLatency.textContent = "生成器";
       el.navHealthLatency.dataset.tone = "local";
     } else if (state.health === "online" && Number.isFinite(state.healthLatencyMs)) {
       el.navHealthLatency.textContent = `${state.healthLatencyMs} ms`;
@@ -1216,6 +1239,7 @@ function renderDashboard() {
   const slaves = getAt(state.config, "$.slaveConfig.slaves", []);
   const scripts = getAt(state.config, "$.scriptConfig.scripts", []);
   const webapp = getAt(state.config, "$.webapp", {});
+  const isGenerator = state.backendMode === "local";
   const risks = [
     webapp.enable && !webapp.password ? "Web 面板已开启但未设置访问密码" : "",
     webapp.tls && (!webapp.tlsCertFile || !webapp.tlsKeyFile) ? "TLS 已开启但证书路径不完整" : "",
@@ -1226,11 +1250,11 @@ function renderDashboard() {
     <section class="dashboard-grid">
       <article class="hero-panel">
         <p class="eyebrow">Control Surface</p>
-        <h3>草稿优先的 Koipy 配置台</h3>
-        <p>所有修改先停留在浏览器草稿。校验通过后，可写入内存、保存到 config.yaml，或保存并触发重载。</p>
+        <h3>${isGenerator ? "Koipy config.yaml 生成器" : "草稿优先的 Koipy 配置台"}</h3>
+        <p>${isGenerator ? "在浏览器里编辑配置模板，校验后导出 config.yaml；不会尝试操作真实后端。" : "所有修改先停留在浏览器草稿。校验通过后，可写入内存、保存到 config.yaml，或保存并触发重载。"}</p>
         <div class="hero-actions">
           <button class="button primary" type="button" data-command="validate">校验草稿</button>
-          <button class="button accent" type="button" data-command="saveReload">保存并重载</button>
+          <button class="button accent" type="button" data-command="saveReload">${isGenerator ? "保存草稿" : "保存并重载"}</button>
         </div>
       </article>
       <article class="metric"><span>规则</span><strong>${rules.length}</strong><small>rules</small></article>
@@ -1710,7 +1734,7 @@ function readInputValue(input) {
 
 async function loadConfig(options = {}) {
   const discardColdSample = options && options.discardColdSample === true;
-  const loadLocal = (cause = null) => {
+  const loadLocal = ({ cause = null, announce = true } = {}) => {
     const localConfig = readLocalConfig();
     state.config = localConfig;
     state.original = clone(localConfig);
@@ -1722,13 +1746,15 @@ async function loadConfig(options = {}) {
     state.lastSyncAt = new Date();
     state.selectedPath = "$";
     render();
-    const detail = cause
-      ? `真实 API 暂不可用，已载入浏览器本地配置：${readableConnectionError(cause)}`
-      : "已载入浏览器本地配置。";
-    toast("已进入本地模式", detail, cause ? "warning" : "success");
+    if (!announce) return;
+    if (cause) {
+      toast("已切回配置生成器", `真实 API 暂不可用：${readableConnectionError(cause)}`, "warning");
+    } else {
+      toast("配置生成器已就绪", "已载入 config.example.yaml 模板，可直接编辑并导出 config.yaml。");
+    }
   };
-  if (wantsLocalBackend() || (state.backendMode === "local" && !state.apiBase)) {
-    loadLocal();
+  if (shouldUseGeneratorMode() || (state.backendMode === "local" && !state.apiBase)) {
+    loadLocal({ announce: !options.initial });
     return;
   }
   try {
@@ -1761,7 +1787,7 @@ async function loadConfig(options = {}) {
     render();
     toast("配置已加载", "已从 Koipy 运行态读取完整配置。");
   } catch (error) {
-    loadLocal(error);
+    loadLocal({ cause: error, announce: true });
   }
 }
 
@@ -1771,7 +1797,7 @@ async function validateDraft() {
     await api("/api/config/validate", { method: "POST", body: { config: state.config } });
     state.validation = "pass";
     renderChrome();
-    toast("校验通过", state.backendMode === "local" ? "当前草稿已通过浏览器本地结构检查。" : "当前草稿可被 Koipy 配置模型接受。");
+    toast("校验通过", state.backendMode === "local" ? "当前 config.yaml 草稿已通过本地结构检查。" : "当前草稿可被 Koipy 配置模型接受。");
     return true;
   } catch (error) {
     state.validation = "fail";
@@ -1790,7 +1816,7 @@ async function putDraft(quiet = false) {
   state.validation = "pass";
   state.lastSyncAt = new Date();
   render();
-  if (!quiet) toast("已写入内存", state.backendMode === "local" ? "配置已保存到当前浏览器的本地存储。" : "配置已更新到运行态，尚未必然保存到 config.yaml。");
+  if (!quiet) toast(state.backendMode === "local" ? "草稿已保存" : "已写入内存", state.backendMode === "local" ? "配置已保存到当前浏览器，可继续编辑或导出 config.yaml。" : "配置已更新到运行态，尚未必然保存到 config.yaml。");
   return true;
 }
 
@@ -1807,9 +1833,9 @@ async function saveWithMode(mode) {
     if (state.dirtyPaths.size) await putDraft(true);
     await applyMode(mode);
     const local = state.backendMode === "local";
-    const title = mode === "save" ? "保存成功" : "保存并重载成功";
+    const title = local ? "草稿已保存" : (mode === "save" ? "保存成功" : "保存并重载成功");
     const message = local
-      ? "配置已保存到当前浏览器。需要真实 Koipy 生效时，请导出 YAML 并放回后端。"
+      ? "配置已保存到当前浏览器。导出 YAML 后可作为 Koipy config.yaml 使用。"
       : (mode === "save" ? "config.yaml 已写入。" : "config.yaml 已写入并重新加载。");
     toast(title, message);
   } catch (error) {
@@ -1829,7 +1855,7 @@ async function exportYaml() {
     link.click();
     link.remove();
     URL.revokeObjectURL(link.href);
-    toast("导出 YAML", state.backendMode === "local" ? "已从浏览器本地配置生成 config.yaml。" : "已生成 config.yaml。");
+    toast("导出 YAML", state.backendMode === "local" ? "已从生成器草稿导出 config.yaml。" : "已生成 config.yaml。");
   } catch (error) {
     toast("导出失败", error.message, "error");
   }
@@ -1838,7 +1864,7 @@ async function exportYaml() {
 async function refreshYaml() {
   try {
     el.yamlEditor.value = await apiText("/api/config/export");
-    toast("YAML 已刷新", state.backendMode === "local" ? "预览来自浏览器本地配置。" : "预览来自后端当前运行态。");
+    toast("YAML 已刷新", state.backendMode === "local" ? "预览来自 config.yaml 生成器草稿。" : "预览来自后端当前运行态。");
   } catch (error) {
     toast("YAML 刷新失败", error.message, "error");
   }
@@ -2109,7 +2135,7 @@ function bindEvents() {
         return;
       }
       applyApiBase(nextApiBase, { silent: true });
-      toast("API 地址已更新", state.backendMode === "local" ? "已切换为浏览器本地模式。" : (state.apiBase || "已切换为同源 API。"));
+      toast("API 地址已更新", state.backendMode === "local" ? "已切换为 config.yaml 生成器。" : (state.apiBase || "已切换为同源 API。"));
       await loadConfig();
     } catch (error) {
       toast("API 地址无效", error.message, "warning");
@@ -2344,11 +2370,12 @@ function bindEvents() {
   el.save.addEventListener("click", () => saveWithMode("save"));
   el.saveReload.addEventListener("click", () => saveWithMode("save_reload"));
   el.discardReload.addEventListener("click", async () => {
-    if (!await confirmDanger("放弃草稿并从文件重载", state.backendMode === "local" ? "未保存草稿会丢失，并重新读取浏览器本地已保存配置。" : "未保存草稿会丢失，后端会重新读取 config.yaml。")) return;
+    const local = state.backendMode === "local";
+    if (!await confirmDanger(local ? "放弃当前草稿" : "放弃草稿并从文件重载", local ? "未保存草稿会丢失，并重新读取已保存的生成器草稿。" : "未保存草稿会丢失，后端会重新读取 config.yaml。")) return;
     try {
       await applyMode("discard_reload");
       await loadConfig();
-      toast("已从文件重载", state.backendMode === "local" ? "已从浏览器本地存储重载。" : "本地草稿已丢弃。");
+      toast(local ? "草稿已重载" : "已从文件重载", local ? "已从生成器本地存储重载。" : "本地草稿已丢弃。");
     } catch (error) {
       toast("重载失败", error.message, "error");
     }
@@ -2402,4 +2429,5 @@ function bindEvents() {
 bindEvents();
 renderChrome();
 renderNav();
-loadConfig({ discardColdSample: true });
+await loadDefaultConfigTemplate();
+loadConfig({ discardColdSample: true, initial: true });
