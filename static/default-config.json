@@ -1,0 +1,511 @@
+{
+  "license": "YOUR_LICENSE_CODE",
+  "admin": [
+    12345678
+  ],
+  "network": {
+    "httpProxy": "http://host:port",
+    "socks5Proxy": "socks5://host:port",
+    "userAgent": "ClashMetaForAndroid/2.8.9.Meta Mihomo/0.16"
+  },
+  "webapp": {
+    "enable": false,
+    "address": "127.0.0.1:8899",
+    "password": "",
+    "tls": false,
+    "tlsCertFile": "",
+    "tlsKeyFile": "",
+    "allowOrigins": [
+      "http://127.0.0.1:8899",
+      "http://localhost:8899",
+      "https://127.0.0.1:8899",
+      "https://localhost:8899"
+    ]
+  },
+  "bot": {
+    "bot-token": null,
+    "api-id": null,
+    "api-hash": null,
+    "proxy": "socks5://127.0.0.1:11112",
+    "ipv6": false,
+    "antiGroup": false,
+    "strictMode": false,
+    "bypassMode": false,
+    "parseMode": "MARKDOWN",
+    "inviteGroup": [
+
+    ],
+    "cacheTime": 60,
+    "echoLimit": 0.8,
+    "inviteBlacklistURL": [
+
+    ],
+    "inviteBlacklistDomain": [
+
+    ],
+    "autoResetCommands": false,
+    "commands": [
+      {
+        "name": "ping",
+        "title": "PING测试",
+        "enable": true,
+        "rule": "ping",
+        "pin": true,
+        "text": "",
+        "attachToInvite": true
+      },
+      {
+        "name": "nf",
+        "rule": "nf",
+        "enable": true,
+        "pin": false
+      }
+    ]
+  },
+  "image": {
+    "speedFormat": "byte/decimal",
+    "color": {
+      "background": {
+        "inbound": {
+          "alpha": 255,
+          "end-color": "#ffffff",
+          "label": 0,
+          "name": "",
+          "value": "#ffffff"
+        },
+        "outbound": {
+          "alpha": 255,
+          "end-color": "#ffffff",
+          "label": 0,
+          "name": "",
+          "value": "#ffffff"
+        },
+        "script": {
+          "alpha": 255,
+          "end-color": "#ffffff",
+          "label": 0,
+          "name": "",
+          "value": "#ffffff"
+        },
+        "scriptTitle": {
+          "alpha": 255,
+          "end-color": "#ffffff",
+          "label": 0,
+          "name": "",
+          "value": "#EAEAEA"
+        },
+        "speed": {
+          "alpha": 255,
+          "end-color": "#ffffff",
+          "label": 0,
+          "name": "",
+          "value": "#ffffff"
+        },
+        "speedTitle": {
+          "alpha": 255,
+          "end-color": "#ffffff",
+          "label": 0,
+          "name": "",
+          "value": "#EAEAEA"
+        },
+        "topoTitle": {
+          "alpha": 255,
+          "end-color": "#ffffff",
+          "label": 0,
+          "name": "",
+          "value": "#EAEAEA"
+        }
+      },
+      "delay": [
+        {
+          "label": 1,
+          "name": "1",
+          "value": "#e4f8f9"
+        },
+        {
+          "label": 50,
+          "name": "2",
+          "value": "#e4f8f9"
+        },
+        {
+          "label": 100,
+          "name": "2",
+          "value": "#bdedf1"
+        },
+        {
+          "label": 200,
+          "name": "3",
+          "value": "#96e2e8"
+        },
+        {
+          "label": 300,
+          "name": "4",
+          "value": "#78d5de"
+        },
+        {
+          "label": 500,
+          "name": "5",
+          "value": "#67c2cf"
+        },
+        {
+          "label": 1000,
+          "name": "6",
+          "value": "#61b2bd"
+        },
+        {
+          "label": 2000,
+          "name": "7",
+          "value": "#466463"
+        },
+        {
+          "label": 0,
+          "name": "8",
+          "value": "#8d8b8e"
+        }
+      ],
+      "ipriskHigh": {
+        "alpha": 255,
+        "end-color": "#ffffff",
+        "label": 0,
+        "name": "",
+        "value": "#ffffff"
+      },
+      "ipriskLow": {
+        "alpha": 255,
+        "end-color": "#ffffff",
+        "label": 0,
+        "name": "",
+        "value": "#ffffff"
+      },
+      "ipriskMedium": {
+        "alpha": 255,
+        "end-color": "#ffffff",
+        "label": 0,
+        "name": "",
+        "value": "#ffffff"
+      },
+      "ipriskVeryHigh": {
+        "alpha": 255,
+        "end-color": "#ffffff",
+        "label": 0,
+        "name": "",
+        "value": "#ffffff"
+      },
+      "na": {
+        "alpha": 255,
+        "end-color": "#8d8b8e",
+        "label": 0,
+        "name": "",
+        "value": "#8d8b8e"
+      },
+      "no": {
+        "alpha": 255,
+        "end-color": "#ee6b73",
+        "label": 0,
+        "name": "",
+        "value": "#ee6b73"
+      },
+      "outColor": [
+
+      ],
+      "speed": [
+        {
+          "label": 0.0,
+          "name": "1",
+          "value": "#fae0e4",
+          "alpha": 255,
+          "end_color": "#ffffff"
+        },
+        {
+          "label": 0.0,
+          "name": "2",
+          "value": "#f7cad0",
+          "alpha": 255,
+          "end_color": "#ffffff"
+        },
+        {
+          "label": 25.0,
+          "name": "3",
+          "value": "#f9bec7",
+          "alpha": 255,
+          "end_color": "#ffffff"
+        },
+        {
+          "label": 50.0,
+          "name": "4",
+          "value": "#ff85a1",
+          "alpha": 255,
+          "end_color": "#ffffff"
+        },
+        {
+          "label": 100.0,
+          "name": "5",
+          "value": "#ff7096",
+          "alpha": 255,
+          "end_color": "#ffffff"
+        },
+        {
+          "label": 150.0,
+          "name": "6",
+          "value": "#ff5c8a",
+          "alpha": 255,
+          "end_color": "#ffffff"
+        },
+        {
+          "label": 200.0,
+          "name": "7",
+          "value": "#ff477e",
+          "alpha": 255,
+          "end_color": "#ffffff"
+        }
+      ],
+      "wait": {
+        "alpha": 255,
+        "end-color": "#dcc7e1",
+        "label": 0,
+        "name": "",
+        "value": "#dcc7e1"
+      },
+      "warn": {
+        "alpha": 255,
+        "end-color": "#fcc43c",
+        "label": 0,
+        "name": "",
+        "value": "#fcc43c"
+      },
+      "yes": {
+        "alpha": 255,
+        "end-color": "#bee47e",
+        "label": 0,
+        "name": "",
+        "value": "#bee47e"
+      },
+      "xline": {
+        "value": "#E1E1E1"
+      },
+      "yline": {
+        "value": "#EAEAEA"
+      },
+      "font": {
+        "value": "#000000"
+      }
+    },
+    "compress": false,
+    "emoji": {
+      "enable": true,
+      "source": "TwemojiLocalSource"
+    },
+    "endColorsSwitch": false,
+    "font": "./resources/alibaba-Regular.otf",
+    "speedEndColorSwitch": false,
+    "invert": false,
+    "save": true,
+    "pixelThreshold": "2500x3500",
+    "title": "节点测试机器人",
+    "logo": true,
+    "watermark": {
+      "alpha": 32,
+      "angle": -16.0,
+      "color": {
+        "alpha": 16,
+        "end-color": "#ffffff",
+        "label": 0,
+        "name": "",
+        "value": "#000000"
+      },
+      "enable": true,
+      "row-spacing": 0,
+      "shadow": false,
+      "size": 64,
+      "start-y": 0,
+      "text": "koipy",
+      "trace": false
+    }
+  },
+  "runtime": {
+    "entrance": true,
+    "duration": 10,
+    "ipstack": true,
+    "localip": false,
+    "nospeed": false,
+    "pingURL": "https://www.gstatic.com/generate_204",
+    "speedFiles": [
+      "https://dl.google.com/dl/android/studio/install/3.4.1.0/android-studio-ide-183.5522156-windows.exe"
+    ],
+    "speedNodes": 300,
+    "speedThreads": 4,
+    "output": "image",
+    "realtime": false,
+    "disableSubCvt": false,
+    "protectContent": false,
+    "enableDNSInject": false
+  },
+  "scriptConfig": {
+    "scripts": [
+      {
+        "type": "gofunc",
+        "name": "TEST_PING_RTT",
+        "rank": -100
+      },
+      {
+        "type": "gojajs",
+        "name": "示例脚本",
+        "rank": 0,
+        "content": "const C_NA = '142,140,142';\nconst C_UNL = '186,230,126';\nconst C_FAIL = '239,107,115';\nconst C_UNK = '92,207,230';\n\nfunction handler() {\n  return {\n      text: '失败',\n      background: C_UNK,\n  }\n}\n"
+      },
+      {
+        "type": "gojajs",
+        "name": "Youtube",
+        "rank": 0,
+        "content": "resources/scripts/builtin/youtube.js"
+      },
+      {
+        "type": "gojajs",
+        "name": "Disney+",
+        "rank": 1,
+        "content": "resources/scripts/builtin/disney+.js"
+      },
+      {
+        "type": "gojajs",
+        "name": "OpenAI",
+        "rank": 2,
+        "content": "resources/scripts/builtin/openai.js"
+      },
+      {
+        "type": "gojajs",
+        "name": "Tiktok",
+        "rank": 3,
+        "content": "resources/scripts/builtin/tiktok.js"
+      },
+      {
+        "type": "gojajs",
+        "name": "维基百科",
+        "rank": 4,
+        "content": "resources/scripts/builtin/wikipedia.js"
+      },
+      {
+        "type": "gojajs",
+        "name": "Claude",
+        "rank": 5,
+        "content": "resources/scripts/builtin/Claude.js"
+      },
+      {
+        "type": "gojajs",
+        "name": "Bilibili",
+        "rank": 6,
+        "content": "resources/scripts/builtin/bilibili.js"
+      },
+      {
+        "type": "gojajs",
+        "name": "微软Copilot",
+        "rank": 7,
+        "content": "resources/scripts/builtin/copilot.js"
+      },
+      {
+        "type": "gojajs",
+        "name": "Spotify",
+        "rank": 8,
+        "content": "resources/scripts/builtin/spotify.js"
+      },
+      {
+        "type": "gojajs",
+        "name": "Viu",
+        "rank": 9,
+        "content": "resources/scripts/builtin/viu.js"
+      },
+      {
+        "type": "gojajs",
+        "name": "IP风险",
+        "rank": 11,
+        "content": "resources/scripts/builtin/iprisk.js"
+      },
+      {
+        "type": "gojajs",
+        "name": "DNS区域",
+        "rank": 10,
+        "content": "resources/scripts/builtin/dns.js"
+      }
+    ]
+  },
+  "slaveConfig": {
+    "healthCheck": {
+      "numSamples": 10,
+      "showStatusStyle": "default",
+      "autoHideOnFailure": false
+    },
+    "showID": true,
+    "speedScheduling": "pipeline",
+    "geoClustering": true,
+    "slaves": [
+      {
+        "type": "miaospeed",
+        "id": "localmiaospeed",
+        "token": "ZfffaQ4/E-7S",
+        "address": "127.0.0.1:8765",
+        "path": "/",
+        "skipCertVerify": true,
+        "tls": true,
+        "invoker": "1114514",
+        "buildtoken": "MIAOKO4|580JxAo049R|GEnERAl|1X571R930|T0kEN",
+        "comment": "本地miaospeed后端",
+        "hidden": false,
+        "option": {
+          "downloadDuration": 8,
+          "downloadThreading": 4,
+          "downloadURL": "https://dl.google.com/dl/android/studio/install/3.4.1.0/android-studio-ide-183.5522156-windows.exe",
+          "pingAddress": "https://cp.cloudflare.com/generate_204",
+          "pingAverageOver": 3,
+          "stunURL": "udp://stunserver2025.stunprotocol.org:3478",
+          "taskRetry": 3,
+          "taskTimeout": 2500,
+          "dnsServer": [
+
+          ],
+          "apiVersion": 1,
+          "uploadURL": "https://speed.cloudflare.com/__up",
+          "uploadDuration": 8,
+          "uploadThreading": 4
+        }
+      }
+    ]
+  },
+  "rules": [
+    {
+      "name": "订阅名1",
+      "url": "https://www.google.com",
+      "owner": 1111111111,
+      "slaveid": [
+        "local"
+      ],
+      "runtime": null,
+      "script": [
+
+      ]
+    },
+    {
+      "name": "订阅名2",
+      "url": "https://www.google2.com",
+      "owner": 2222222222
+    }
+  ],
+  "subconverter": {
+    "enable": false,
+    "mode": "subconverter",
+    "template": {
+      "backend": "http://$Host:$Port/sub?target=$Target&new_name=true&url=$EncodedURL"
+    },
+    "defaults": {
+      "target": "ClashMeta"
+    }
+  },
+  "translation": {
+    "lang": "zh-CN",
+    "resources": {
+      "zh-CN": "./resources/i18n/zh-CN.yml"
+    }
+  },
+  "log-level": "INFO",
+  "user": [
+
+  ]
+}
